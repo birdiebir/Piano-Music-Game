@@ -110,9 +110,3 @@ Now that Airtable is set up, you’re ready to **start the game**! 🚀
 Enjoy tracking your **performance metrics** in real-time with Airtable!  
 
 ---
-
-### 📜 License  
-This project is licensed under the **MIT License**.  
-
-### 💬 Questions or Issues?  
-Feel free to open an **issue** on GitHub or reach out! 🚀
