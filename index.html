@@ -1,0 +1,309 @@
+<html>
+
+<head>
+    <title>Piano-Tiles</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+    <style>
+        body {
+            background: #36D1DC;
+            background: -webkit-linear-gradient(to right, #5B86E5, #36D1DC);
+            background: linear-gradient(to right, #5B86E5, #36D1DC);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #piano,
+        #background,
+        #score_bar {
+            position: absolute;
+        }
+
+        #piano {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1000px;
+            height: 300px;
+        }
+
+        #background {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1000px;
+            height: 300px;
+        }
+
+        #score_bar {
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 70px;
+        }
+
+        #btn {
+            position: absolute;
+            top: calc(50% + 200px);
+            /* 按鈕位於畫布下方 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+        }
+
+        .score {
+            position: absolute;
+            top: calc(50% + 350px);
+            /* 按鈕位於畫布下方 */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #status {
+            font-size: 5rem;
+            font-weight: bold;
+            position: absolute;
+            top: calc(50% - 300px);
+            /* 按鈕位於畫布下方 */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #start_btn {
+            display: block;
+            font-size: 1.3em;
+            width: 100px;
+            height: 100px;
+            font-family: 'Trebuchet MS', sans-serif;
+            text-align: center;
+            line-height: 100px;
+            letter-spacing: -1px;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            background: #5a99d4;
+            cursor: pointer;
+            transition: width 0.9s, height 0.9s;
+        }
+
+        #start_btn:hover {
+            width: 105px;
+            height: 105px;
+        }
+
+        #end_btn {
+            position: absolute;
+            top: calc(50% + 200px);
+            left: calc(50% + 120px);
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+        }
+
+        #end_button {
+            display: block;
+            font-size: 1.3em;
+            width: 100px;
+            height: 100px;
+            font-family: 'Trebuchet MS', sans-serif;
+            text-align: center;
+            line-height: 100px;
+            letter-spacing: -1px;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            background: #d45a5a;
+            cursor: pointer;
+            transition: width 0.9s, height 0.9s;
+        }
+
+        #end_button:hover {
+            width: 105px;
+            height: 105px;
+        }
+
+        /* Add these new styles */
+        #home-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(91, 134, 229, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .home-content {
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .home-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .home-content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-game-btn {
+            font-size: 1.5em;
+            padding: 15px 40px;
+            background: #36D1DC;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .start-game-btn:hover {
+            transform: scale(1.05);
+            background: #2bb1bc;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .instructions h2 {
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+
+        .song-selection {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .song-selection select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        }
+
+        .song-selection h2 {
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .song-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Add this new div at the top of the body -->
+    <div id="home-overlay">
+        <div class="home-content">
+            <h1>Piano Tiles Game</h1>
+            
+            <div class="song-selection">
+                <h2>Select a Song</h2>
+                <select id="song-select" onchange="changeSong()">
+
+                <!-- 如何添加/修改音樂到選單?-->  
+                    <!-- 1. 將音樂檔案放置在"music" 資料夾-->  
+                    <!-- 2. 在下方"value"輸入音樂檔案位置, 和輸入希望顯示的名稱-->
+
+                    <!-- 預設音樂區域-->
+                    <option value="music/Piano.mp3">Piano Song</option>
+                    <option value="music/Produce.m4a">Produce </option>
+                    <option value="music/10sec.m4a">10sec </option>
+                    <option value="music/music_chinese.mp3">music_chinese </option>
+                    <option value="music/music_short.m4a">music_short </option>
+                    
+                    <!-- 自行添加音樂-->
+                    <option value="請自行輸入音樂位置"> 請自行輸入歌曲顯示名稱 </option>
+                
+                
+                </select>
+                <div class="song-info">
+                    Selected: <span id="current-song">Piano Song</span>
+                </div>
+            </div>
+            
+            <button class="start-game-btn" onclick="startGameFromHome()">Play Game</button>
+        </div>
+    </div>
+
+    <canvas id="score_bar" width="300" height="70"></canvas>
+    <canvas id="background" width="1000" height="300"></canvas>
+    <canvas id="piano" width="1000" height="300"></canvas>
+
+    <!-- change your music -->
+    <audio id="music" src="music/Piano.mp3"></audio>
+
+
+    <div id="btn">
+        <span id="start_btn">START</span>
+    </div>
+    <div id="end_btn">
+        <span id="end_button">END</span>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="score">
+        <div>RMSSD: <span id="rmssd"></span></div>
+        <div>SDNN: <span id="sdnn"></span></div>
+        <div>反應時間: <span id="response"></span></div>
+    </div>
+
+    <script>
+        // Add this script right before the closing body tag
+        function startGameFromHome() {
+            document.getElementById('home-overlay').style.display = 'none';
+        }
+    </script>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
